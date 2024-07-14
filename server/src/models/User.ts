@@ -1,16 +1,37 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize  from '../config/database';
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare id: CreationOptional<number>;
-  declare name: string;
-  declare email: string;
-  declare password: string;
-  declare createdAt: CreationOptional<Date>;
-  declare updatedAt: CreationOptional<Date>;
+export interface UserAttributes {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-User.init(
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+
+export class UserInstance extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+  id!: number;
+  name!: string;
+  email!: string;
+  password!: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  // Add any instance methods here
+  toJSON(): UserAttributes {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      password: this.password,
+    };
+  }
+}
+
+UserInstance.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -30,13 +51,19 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: 'User',
+    modelName: 'Users',
   }
 );
 
-export default User;
+export default UserInstance;
